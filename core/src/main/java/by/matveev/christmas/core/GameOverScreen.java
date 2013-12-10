@@ -1,5 +1,6 @@
 package by.matveev.christmas.core;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
@@ -48,50 +49,60 @@ public class GameOverScreen extends AbstractScreen {
                 float buttonsWidth = 0;
                 float w = 0;
 
-                final Image [] buttons = {
-                        new Image(atlas.findRegion("replayButton")),
-                        new Image(atlas.findRegion("exitButton"))
+                final Pair [] buttons = {
+                        new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                Screens.set(new PlayScreen());
+                            }
+                        }),
+                        new Pair<Image, ClickListener>(new Image(atlas.findRegion("exitButton")),new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                Gdx.app.exit();
+                            }
+                        })
                 };
 
 
-                for (Image btn : buttons) {
-                    buttonsWidth += btn.getPrefWidth();
-                    w = btn.getPrefWidth();
+                for (Pair<Image, ClickListener> btn : buttons) {
+                    buttonsWidth += btn.getFirst().getPrefWidth();
+                    w = btn.getFirst().getPrefWidth();
                 }
                 float padding = w * 0.35f;
                 buttonsWidth += padding * (buttons.length - 1);
 
                 float startX = (Cfg.width() - buttonsWidth) * 0.5f;
                 float startY = Cfg.height() * 0.12f;
-                for (final Image btn : buttons) {
-                    btn.setPosition(startX, startY);
+                for (final Pair<Image, ClickListener> btn : buttons) {
+                    btn.getFirst().setPosition(startX, startY);
                     startX += w + padding;
 
-                    btn.setOrigin(btn.getPrefWidth() * 0.5f, btn.getPrefHeight() * 0.5f);
-                    btn.setScale(0f);
-                    btn.addAction(scaleTo(1f, 1f, 0.3f, Interpolation.swingOut));
+                    btn.getFirst().setOrigin(btn.getFirst().getPrefWidth() * 0.5f, btn.getFirst().getPrefHeight() * 0.5f);
+                    btn.getFirst().setScale(0f);
+                    btn.getFirst().addAction(scaleTo(1f, 1f, 0.3f, Interpolation.swingOut));
 
-                    btn.addListener(new ClickListener() {
+                    btn.getFirst().addListener(new ClickListener() {
 
                         @Override
                         public void clicked(InputEvent event, float x, float y) {
-                            Screens.set(new PlayScreen());
+                            btn.getSecond().clicked(event, x, y);
                         }
 
                         @Override
                         public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                            btn.clearActions();
-                            btn.addAction(scaleTo(1.1f, 1.1f, 0.2f));
+                            btn.getFirst().clearActions();
+                            btn.getFirst().addAction(scaleTo(1.1f, 1.1f, 0.2f));
                         }
 
                         @Override
                         public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                            btn.clearActions();
-                            btn.addAction(scaleTo(1f, 1f, 0.2f));
+                            btn.getFirst().clearActions();
+                            btn.getFirst().addAction(scaleTo(1f, 1f, 0.2f));
                         }
                     });
 
-                    stage.addActor(btn);
+                    stage.addActor(btn.getFirst());
                 }
                 return true;
             }

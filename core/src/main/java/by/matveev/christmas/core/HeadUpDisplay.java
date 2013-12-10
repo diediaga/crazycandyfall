@@ -36,8 +36,8 @@ public class HeadUpDisplay extends WidgetGroup {
     }
 
     private void updateLabelsPosition() {
-        labelScore.setPosition(Cfg.width() * 0.05f, Cfg.height() * 0.9f);
-        labelTime.setPosition(Cfg.width() * 0.72f, Cfg.height() * 0.9f);
+        labelScore.setPosition(Cfg.width() * 0.05f, Cfg.height() * 0.88f);
+        labelTime.setPosition(Cfg.width() * 0.78f, Cfg.height() * 0.88f);
     }
 
     public void setTime(int time) {
@@ -46,7 +46,10 @@ public class HeadUpDisplay extends WidgetGroup {
                 labelTime.addAction(repeat(-1, sequence(alpha(0f, 0.5f), alpha(1f, 0.5f))));
             }
         } else {
-            if (hasActions(labelTime)) labelTime.clearActions();
+            if (hasActions(labelTime)) {
+                labelTime.clearActions();
+                labelTime.getColor().a = 1f;
+            }
         }
         labelTime.setText(CommonUtils.format(time));
         updateLabelsPosition();

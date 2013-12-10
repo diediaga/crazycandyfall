@@ -183,11 +183,26 @@ public class PlayScreen extends AbstractScreen {
                     }));
                     stage.addActor(label);
                 } else if (candy.getType() == 7) {
-                    currentTime += 5;
+                    currentTime += 1 * 1000;
                     display.setBonusTime(currentTime);
                     final Message label = labelPool.obtain();
                     label.setPosition(candy.getX(), candy.getY());
-                    label.setText("+00:05");
+                    label.setText("+00:01");
+                    label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                        @Override
+                        public boolean act(float delta) {
+                            label.remove();
+                            labelPool.free(label);
+                            return true;
+                        }
+                    }));
+                    stage.addActor(label);
+                }  else if (candy.getType() == 8) {
+                    score *= 2;
+                    display.setScore(score);
+                    final Message label = labelPool.obtain();
+                    label.setPosition(candy.getX(), candy.getY());
+                    label.setText("x2");
                     label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
                         @Override
                         public boolean act(float delta) {
@@ -244,5 +259,15 @@ public class PlayScreen extends AbstractScreen {
         if (santaClaus.getX() > Cfg.width() - santaClaus.getWidth()) {
             santaClaus.setX(Cfg.width() - santaClaus.getWidth());
         }
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        spawnTimer.stop();
+        spawnTimer.clear();
+
+        countdownTimer.stop();
+        countdownTimer.clear();
     }
 }

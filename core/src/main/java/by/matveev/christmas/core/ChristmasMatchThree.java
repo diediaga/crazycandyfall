@@ -26,7 +26,7 @@ public class ChristmasMatchThree extends AbstractGame {
             @Override
             public void run() {
 //                Sounds.init();
-                Screens.push(new GameOverScreen(10));
+                Screens.push(new PlayScreen());
             }
         }));
     }
