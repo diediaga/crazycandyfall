@@ -6,11 +6,15 @@ package by.matveev.christmas.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.Timer;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
@@ -21,7 +25,13 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 public class PlayScreen extends AbstractScreen {
 
     private HeadUpDisplay display;
-    private Countdown timer;
+
+    private Timer countdownTimer;
+    private Timer spawnTimer;
+
+    private int currentTime;
+
+    private boolean started;
 
     private SantaClaus santaClaus;
     private Group candiesGroup;
@@ -39,29 +49,72 @@ public class PlayScreen extends AbstractScreen {
     public void show() {
         super.show();
 
-        createCandiesGroup();
+        final Label.LabelStyle s = new Label.LabelStyle();
+        s.fontColor = Color.WHITE;
+        s.font = Assets.instance().get("fonts/font.fnt");
+        final Label label = new Label("TAP TO START!", s);
+        label.setPosition((Cfg.width() - label.getPrefWidth()) * 0.5f, (Cfg.height() - label.getPrefHeight()) * 0.5f);
         createSantaClaus();
 
-        createHeadUpDisplays();
 
-        atlas = Assets.instance().get("gfx/game.atlas");
-        candyPool = new Pool<Candy>() {
+        stage.addActor(label);
+        stage.addListener(new ClickListener(){
             @Override
-            protected Candy newObject() {
-                return new Candy();
-            }
-        };
+            public void clicked(InputEvent event, float x, float y) {
+                label.remove();
 
-        final Label.LabelStyle style = new Label.LabelStyle();
-        style.fontColor = Color.WHITE;
-        style.font = Assets.instance().get("fonts/font.fnt");
 
-        labelPool = new Pool<Message>() {
-            @Override
-            protected Message newObject() {
-                return new Message("", style);
+                started = true;
+
+                createHeadUpDisplays();
+                createCandiesGroup();
+
+                atlas = Assets.instance().get("gfx/game.atlas");
+                candyPool = new Pool<Candy>() {
+                    @Override
+                    protected Candy newObject() {
+                        return new Candy();
+                    }
+                };
+
+                final Label.LabelStyle style = new Label.LabelStyle();
+                style.fontColor = Color.WHITE;
+                style.font = Assets.instance().get("fonts/font.fnt");
+
+                labelPool = new Pool<Message>() {
+                    @Override
+                    protected Message newObject() {
+                        return new Message("", style);
+                    }
+                };
+
+
+                currentTime = Cfg.INITIAL_TIME;
+                countdownTimer = new Timer();
+                countdownTimer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        currentTime -= 1000;
+                        display.setTime(currentTime);
+
+                        if (currentTime <= 0) {
+                            Screens.set(new GameOverScreen(score));
+                        }
+                    }
+                }, 1, 1);
+
+                spawnTimer = new Timer();
+                spawnTimer.scheduleTask(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        createCandy();
+                    }
+                }, 0, 0.3f);
+
+
             }
-        };
+        });
+
 
     }
 
@@ -81,16 +134,6 @@ public class PlayScreen extends AbstractScreen {
     private void createHeadUpDisplays() {
         display = new HeadUpDisplay();
         stage.addActor(display);
-
-        timer = new Countdown(Cfg.INITIAL_TIME, new Callback<Integer>() {
-            @Override
-            public void result(Integer time) {
-                display.setTime(time);
-
-                createCandy();
-            }
-        });
-        timer.start();
     }
 
     private void createCandy() {
@@ -105,7 +148,7 @@ public class PlayScreen extends AbstractScreen {
         candy.setX(random(Cfg.width() * 0.2f, Cfg.width() * 0.8f));
         candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
         candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
-        candy.addAction(repeat(-1, moveBy(0, -5, 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(25, 45), 0.1f)));
         candiesGroup.addActor(candy);
     }
 
@@ -115,13 +158,49 @@ public class PlayScreen extends AbstractScreen {
         super.render(delta);
         BoundsDebug.render(stage.getCamera().combined, delta);
 
+        if (started) {
+
         input();
 
         for (Actor child : candiesGroup.getChildren()) {
             final Candy candy = (Candy) child;
             if (candy.bounds().overlaps(santaClaus.bounds())) {
-                score++;
-                display.setScore(score);
+
+                if (candy.getType() < 7) {
+                    // plain type
+                    score++;
+                    display.setScore(score);
+                    final Message label = labelPool.obtain();
+                    label.setPosition(candy.getX(), candy.getY());
+                    label.setText("+1");
+                    label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                        @Override
+                        public boolean act(float delta) {
+                            label.remove();
+                            labelPool.free(label);
+                            return true;
+                        }
+                    }));
+                    stage.addActor(label);
+                } else if (candy.getType() == 7) {
+                    currentTime += 5;
+                    display.setBonusTime(currentTime);
+                    final Message label = labelPool.obtain();
+                    label.setPosition(candy.getX(), candy.getY());
+                    label.setText("+00:05");
+                    label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                        @Override
+                        public boolean act(float delta) {
+                            label.remove();
+                            labelPool.free(label);
+                            return true;
+                        }
+                    }));
+                    stage.addActor(label);
+                }
+
+
+
 
                 final Message label = labelPool.obtain();
                 label.setPosition(candy.getX(), candy.getY());
@@ -144,6 +223,7 @@ public class PlayScreen extends AbstractScreen {
                 candyPool.free(candy);
                 candy.remove();
             }
+        }
         }
     }
 

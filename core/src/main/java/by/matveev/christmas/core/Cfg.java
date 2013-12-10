@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.Color;
 public class Cfg {
 
     public static final int WIDTH = 480;
-    public static final int HEIGHT = 600;
+    public static final int HEIGHT = 800;
 
     // Timing
-    public static final int INITIAL_TIME = 60 * 1000;
+    public static final int INITIAL_TIME = 10 * 1000;
     public static final int WARNING_TIME_THRESHOLD = 10 * 1000;
 
     // Colors

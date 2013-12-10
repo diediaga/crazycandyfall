@@ -56,4 +56,9 @@ public class HeadUpDisplay extends WidgetGroup {
         labelScore.setText(String.valueOf(score));
         updateLabelsPosition();
     }
+
+    public void setBonusTime(int time) {
+        labelTime.setText(CommonUtils.format(time));
+        updateLabelsPosition();
+    }
 }
