@@ -3,57 +3,79 @@
  */
 package by.matveev.christmas.core;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Pool;
+
+import static com.badlogic.gdx.math.MathUtils.random;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 /**
  * @author Alexey Matveev
  */
 public class PlayScreen extends AbstractScreen {
 
-    private static final float WORLD_WIDTH_IN_METERS = 5f;
-    private static final float WORLD_HEIGHT_IN_METERS = 8f;
-
-    private static final Vector2 GRAVITY = new Vector2(0, -9.8f);
-
     private HeadUpDisplay display;
     private Countdown timer;
 
-    private final Stage worldStage;
-    private final World world;
-    private final Box2DDebugRenderer renderer;
-
     private SantaClaus santaClaus;
+    private Group candiesGroup;
+
+    private int score;
+
+    private Pool<Candy> candyPool;
+    private Pool<Message> labelPool;
+    private TextureAtlas atlas;
 
     public PlayScreen() {
-        world = new World(GRAVITY, true);
-
-        worldStage = new Stage();
-        worldStage.setViewport(WORLD_WIDTH_IN_METERS, WORLD_HEIGHT_IN_METERS, true);
-        renderer = new Box2DDebugRenderer(true, true, true, true, true, true);
     }
 
     @Override
     public void show() {
         super.show();
 
+        createCandiesGroup();
         createSantaClaus();
 
         createHeadUpDisplays();
 
-        registerListeners();
+        atlas = Assets.instance().get("gfx/game.atlas");
+        candyPool = new Pool<Candy>() {
+            @Override
+            protected Candy newObject() {
+                return new Candy();
+            }
+        };
+
+        final Label.LabelStyle style = new Label.LabelStyle();
+        style.fontColor = Color.WHITE;
+        style.font = Assets.instance().get("fonts/font.fnt");
+
+        labelPool = new Pool<Message>() {
+            @Override
+            protected Message newObject() {
+                return new Message("", style);
+            }
+        };
+
     }
 
-    private void registerListeners() {
-
+    private void createCandiesGroup() {
+        candiesGroup = new Group();
+        candiesGroup.setSize(Cfg.width(), Cfg.height());
+        stage.addActor(candiesGroup);
     }
 
     private void createSantaClaus() {
-        santaClaus = new SantaClaus(world);
-        worldStage.addActor(santaClaus);
+        santaClaus = new SantaClaus();
+        santaClaus.setY(0);
+        santaClaus.setX((Cfg.width() - santaClaus.getPrefWidth()) * 0.5f);
+        stage.addActor(santaClaus);
     }
 
     private void createHeadUpDisplays() {
@@ -72,29 +94,75 @@ public class PlayScreen extends AbstractScreen {
     }
 
     private void createCandy() {
-        worldStage.addActor(new Candy(world));
+        final Candy candy = candyPool.obtain();
+
+        final int type =  random(1, 8);
+
+        candy.setRegion(atlas.findRegion("candy" + type));
+        candy.setType(type);
+        candy.setRotation(random(360f));
+        candy.setY(Cfg.height() + candy.getHeight());
+        candy.setX(random(Cfg.width() * 0.2f, Cfg.width() * 0.8f));
+        candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
+        candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -5, 0.1f)));
+        candiesGroup.addActor(candy);
     }
+
 
     @Override
     public void render(float delta) {
         super.render(delta);
+        BoundsDebug.render(stage.getCamera().combined, delta);
 
         input();
 
-        world.step(delta, 3, 3);
-        worldStage.act(delta);
-        worldStage.draw();
+        for (Actor child : candiesGroup.getChildren()) {
+            final Candy candy = (Candy) child;
+            if (candy.bounds().overlaps(santaClaus.bounds())) {
+                score++;
+                display.setScore(score);
 
-        renderer.render(world, worldStage.getCamera().combined);
+                final Message label = labelPool.obtain();
+                label.setPosition(candy.getX(), candy.getY());
+                label.setText("+1");
+                label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        label.remove();
+                        labelPool.free(label);
+                        return true;
+                    }
+                }));
+                stage.addActor(label);
+
+                candy.remove();
+                candyPool.free(candy);
+            }
+
+            if (candy.getY() + candy.getPrefHeight() < 0) {
+                candyPool.free(candy);
+                candy.remove();
+            }
+        }
     }
 
     private void input() {
-        final float direction;
-        if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            direction = -(Gdx.input.getAccelerometerX() * 0.01f);
-        } else {
-            direction = Gdx.input.getDeltaX() * 0.01f;
+        switch (Gdx.app.getType()) {
+            case Android:
+                santaClaus.setX(santaClaus.getX() + (-Gdx.input.getAccelerometerX()));
+                break;
+            default:
+                santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);
         }
-        santaClaus.move(direction);
+
+
+        if (santaClaus.getX() < 0) {
+            santaClaus.setX(0);
+        }
+
+        if (santaClaus.getX() > Cfg.width() - santaClaus.getWidth()) {
+            santaClaus.setX(Cfg.width() - santaClaus.getWidth());
+        }
     }
 }

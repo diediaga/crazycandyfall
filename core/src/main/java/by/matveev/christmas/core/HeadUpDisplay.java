@@ -5,14 +5,11 @@ package by.matveev.christmas.core;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 
 import static by.matveev.christmas.core.ActorUtils.hasActions;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.alpha;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.repeat;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 /**
  * @author Alexey Matveev
@@ -39,8 +36,8 @@ public class HeadUpDisplay extends WidgetGroup {
     }
 
     private void updateLabelsPosition() {
-        labelScore.setPosition(Cfg.width() * 0.04f, Cfg.height() * 0.93f);
-        labelTime.setPosition(Cfg.width() * 0.8f, Cfg.height() * 0.93f);
+        labelScore.setPosition(Cfg.width() * 0.05f, Cfg.height() * 0.9f);
+        labelTime.setPosition(Cfg.width() * 0.72f, Cfg.height() * 0.9f);
     }
 
     public void setTime(int time) {

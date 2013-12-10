@@ -9,8 +9,10 @@ public class ChristmasMatchThreeDesktop {
 	public static void main (String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.useGL20 = true;
-        config.width = 480;
-        config.height = 600;
+        config.width = 480 / 2;
+        config.height = 600 / 2;
+//        config.width = 480;
+//        config.height = 600;
 		new LwjglApplication(new ChristmasMatchThree(), config);
 	}
 }

@@ -14,12 +14,15 @@ public class Cfg {
     public static final int HEIGHT = 600;
 
     // Timing
-    public static final int INITIAL_TIME = 180 * 1000;
+    public static final int INITIAL_TIME = 60 * 1000;
     public static final int WARNING_TIME_THRESHOLD = 10 * 1000;
 
     // Colors
     public static final Color COLOR_BACKGROUND = new Color(0xc0392bff);
     public static final Color COLOR_CELL_BACKGROUND = new Color(0xe74c3cff);
+
+
+    public static final float GRAVITY = -0.98f;
 
 
     // Size

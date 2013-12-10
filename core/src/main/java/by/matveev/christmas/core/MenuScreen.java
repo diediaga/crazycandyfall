@@ -1,14 +1,18 @@
 package by.matveev.christmas.core;
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * @author Alexey Matveev
  */
 public class MenuScreen extends AbstractScreen {
+
+    private final Group effectGroup = new Group();
 
     public MenuScreen() {
     }
@@ -17,39 +21,52 @@ public class MenuScreen extends AbstractScreen {
     public void show() {
         super.show();
 
-        addLogoIcons();
 
-        stage.addAction(sequence(delay(1f), new Action() {
+        effectGroup.setSize(Cfg.width(), Cfg.height());
+        stage.addActor(effectGroup);
+
+        final Timer timer = new Timer();
+        timer.scheduleTask(new Timer.Task() {
             @Override
-            public boolean act(float v) {
-                Screens.set(new PlayScreen());
-                return true;
+            public void run() {
+//                final Candy candy = new Candy();
+//                candy.setRotation(random(360f));
+//                candy.setY(Cfg.height() + candy.getHeight());
+//                candy.setX(random(Cfg.width()));
+//                candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
+//                candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
+//                candy.addAction(repeat(-1, moveBy(0, -5, 0.1f)));
+//                candy.getColor().a = 40f / 255f;
+//                effectGroup.addActor(candy);
             }
-        }));
+        }, 1f, 0.5f);
 
-    }
 
-    private void addLogoIcons() {
-        final TextureAtlas iconsAtlas = Assets.instance().get("gfx/icons.atlas");
+        final TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.fontColor = Color.WHITE;
+        style.font = Assets.instance().get("fonts/font.fnt");
+        style.pressedOffsetX= - 5f;
+        style.pressedOffsetY= - 5f;
 
-        final int iconsCount = iconsAtlas.getRegions().size;
+        final TextButton startButton = new TextButton("Play", style);
+        startButton.setPosition((Cfg.width() - startButton.getPrefWidth()) * 0.5f, Cfg.height() * 0.6f);
+        startButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Screens.set(new PlayScreen());
+            }
+        });
+        stage.addActor(startButton);
 
-        float totalWith = 42 * iconsCount;
-        float padding = 20;
-        totalWith += padding * (iconsCount - 1);
+        final TextButton howToButton = new TextButton("How to play", style);
+        howToButton.setPosition((Cfg.width() - howToButton.getPrefWidth()) * 0.5f, Cfg.height() * 0.45f);
+        stage.addActor(howToButton);
 
-        float startX = (Cfg.width() - totalWith) * 0.5f;
-        float startY = Cfg.height() * 0.7f;
 
-        final String prefix = "icon";
+        final TextButton leaderboardButton = new TextButton("Highscores", style);
+        leaderboardButton.setPosition((Cfg.width() - leaderboardButton.getPrefWidth()) * 0.5f, Cfg.height() * 0.3f);
+        stage.addActor(leaderboardButton);
 
-        for (int ix = 1; ix <= iconsCount; ix++) {
-            final Image image = new Image(iconsAtlas.findRegion(prefix + ix));
-            image.setPosition(startX, startY);
-            image.getColor().a = 0f;
-            image.addAction(sequence(delay(ix * 0.1f), alpha(1f, 0.5f)));
-            startX += 42 + padding;
-            stage.addActor(image);
-        }
+
     }
 }

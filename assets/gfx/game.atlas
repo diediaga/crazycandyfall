@@ -1,53 +1,88 @@
 
 game.png
 format: RGBA8888
-filter: Nearest,Nearest
+filter: Linear,Linear
 repeat: none
 santa
   rotate: false
+  xy: 1, 45
+  size: 97, 180
+  orig: 97, 180
+  offset: 0, 0
+  index: -1
+penguin
+  rotate: false
+  xy: 100, 125
+  size: 103, 100
+  orig: 103, 100
+  offset: 0, 0
+  index: -1
+speech
+  rotate: false
+  xy: 100, 4
+  size: 77, 119
+  orig: 77, 119
+  offset: 0, 0
+  index: -1
+rect_mask
+  rotate: false
+  xy: 205, 183
+  size: 42, 42
+  orig: 42, 42
+  offset: 0, 0
+  index: -1
+candy8
+  rotate: false
   xy: 1, 1
-  size: 65, 120
-  orig: 65, 120
+  size: 38, 42
+  orig: 38, 42
+  offset: 0, 0
+  index: -1
+candy7
+  rotate: false
+  xy: 205, 139
+  size: 30, 42
+  orig: 30, 42
   offset: 0, 0
   index: -1
 candy1
   rotate: false
-  xy: 68, 79
+  xy: 179, 81
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy2
   rotate: false
-  xy: 68, 35
+  xy: 41, 1
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy3
   rotate: false
-  xy: 87, 79
+  xy: 179, 37
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy4
   rotate: false
-  xy: 87, 35
+  xy: 60, 1
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy5
   rotate: false
-  xy: 106, 79
+  xy: 79, 1
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy6
   rotate: false
-  xy: 106, 35
+  xy: 237, 139
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
