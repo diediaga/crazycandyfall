@@ -1,5 +1,6 @@
 package by.matveev.christmas.core;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -49,20 +50,24 @@ public class GameOverScreen extends AbstractScreen {
                 float buttonsWidth = 0;
                 float w = 0;
 
-                final Pair [] buttons = {
-                        new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener(){
+                final List<Pair> buttons = Arrays.<Pair>asList(
+                        new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
                                 Screens.set(new PlayScreen());
                             }
-                        }),
-                        new Pair<Image, ClickListener>(new Image(atlas.findRegion("exitButton")),new ClickListener(){
-                            @Override
-                            public void clicked(InputEvent event, float x, float y) {
-                                Gdx.app.exit();
-                            }
-                        })
-                };
+                        }));
+
+                if (Gdx.app.getType() != Application.ApplicationType.WebGL) {
+                    buttons.add(
+                            new Pair<Image, ClickListener>(new Image(atlas.findRegion("exitButton")), new ClickListener() {
+                                @Override
+                                public void clicked(InputEvent event, float x, float y) {
+                                    Gdx.app.exit();
+                                }
+                            }));
+                }
+
 
 
                 for (Pair<Image, ClickListener> btn : buttons) {
@@ -70,7 +75,7 @@ public class GameOverScreen extends AbstractScreen {
                     w = btn.getFirst().getPrefWidth();
                 }
                 float padding = w * 0.35f;
-                buttonsWidth += padding * (buttons.length - 1);
+                buttonsWidth += padding * (buttons.size() - 1);
 
                 float startX = (Cfg.width() - buttonsWidth) * 0.5f;
                 float startY = Cfg.height() * 0.12f;

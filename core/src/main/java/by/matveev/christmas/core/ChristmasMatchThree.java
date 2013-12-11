@@ -3,6 +3,7 @@
  */
 package by.matveev.christmas.core;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 public class ChristmasMatchThree extends AbstractGame {
@@ -13,6 +14,8 @@ public class ChristmasMatchThree extends AbstractGame {
     @Override
     public void create() {
         Gdx.input.setCatchBackKey(true);
+
+        Gdx.app.setLogLevel(Application.LOG_NONE);
 
         Prefs.init();
         Prefs.addListener(new Prefs.PrefsListener() {

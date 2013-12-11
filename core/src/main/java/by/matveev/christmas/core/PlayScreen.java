@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Timer;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -162,14 +163,63 @@ public class PlayScreen extends AbstractScreen {
 
         input();
 
-        for (Actor child : candiesGroup.getChildren()) {
-            final Candy candy = (Candy) child;
-            if (candy.bounds().overlaps(santaClaus.bounds())) {
+            final SnapshotArray<Actor> children = candiesGroup.getChildren();
+            Actor[] actors = children.begin();
+            for (int i = 0, n = children.size; i < n; i++) {
+                final Candy candy = (Candy) actors[i];
+                if (candy.bounds().overlaps(santaClaus.bounds())) {
 
-                if (candy.getType() < 7) {
-                    // plain type
-                    score++;
-                    display.setScore(score);
+                    if (candy.getType() < 7) {
+                        // plain type
+                        score++;
+                        display.setScore(score);
+                        final Message label = labelPool.obtain();
+                        label.setPosition(candy.getX(), candy.getY());
+                        label.setText("+1");
+                        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                            @Override
+                            public boolean act(float delta) {
+                                label.remove();
+                                labelPool.free(label);
+                                return true;
+                            }
+                        }));
+                        stage.addActor(label);
+                    } else if (candy.getType() == 7) {
+                        currentTime += 1 * 1000;
+                        display.setBonusTime(currentTime);
+                        final Message label = labelPool.obtain();
+                        label.setPosition(candy.getX(), candy.getY());
+                        label.setText("+00:01");
+                        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                            @Override
+                            public boolean act(float delta) {
+                                label.remove();
+                                labelPool.free(label);
+                                return true;
+                            }
+                        }));
+                        stage.addActor(label);
+                    }  else if (candy.getType() == 8) {
+                        score += 2;
+                        display.setScore(score);
+                        final Message label = labelPool.obtain();
+                        label.setPosition(candy.getX(), candy.getY());
+                        label.setText("x2");
+                        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+                            @Override
+                            public boolean act(float delta) {
+                                label.remove();
+                                labelPool.free(label);
+                                return true;
+                            }
+                        }));
+                        stage.addActor(label);
+                    }
+
+
+
+
                     final Message label = labelPool.obtain();
                     label.setPosition(candy.getX(), candy.getY());
                     label.setText("+1");
@@ -182,63 +232,17 @@ public class PlayScreen extends AbstractScreen {
                         }
                     }));
                     stage.addActor(label);
-                } else if (candy.getType() == 7) {
-                    currentTime += 1 * 1000;
-                    display.setBonusTime(currentTime);
-                    final Message label = labelPool.obtain();
-                    label.setPosition(candy.getX(), candy.getY());
-                    label.setText("+00:01");
-                    label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                        @Override
-                        public boolean act(float delta) {
-                            label.remove();
-                            labelPool.free(label);
-                            return true;
-                        }
-                    }));
-                    stage.addActor(label);
-                }  else if (candy.getType() == 8) {
-                    score *= 2;
-                    display.setScore(score);
-                    final Message label = labelPool.obtain();
-                    label.setPosition(candy.getX(), candy.getY());
-                    label.setText("x2");
-                    label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                        @Override
-                        public boolean act(float delta) {
-                            label.remove();
-                            labelPool.free(label);
-                            return true;
-                        }
-                    }));
-                    stage.addActor(label);
+
+                    candy.remove();
+                    candyPool.free(candy);
                 }
 
-
-
-
-                final Message label = labelPool.obtain();
-                label.setPosition(candy.getX(), candy.getY());
-                label.setText("+1");
-                label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                    @Override
-                    public boolean act(float delta) {
-                        label.remove();
-                        labelPool.free(label);
-                        return true;
-                    }
-                }));
-                stage.addActor(label);
-
-                candy.remove();
-                candyPool.free(candy);
+                if (candy.getY() + candy.getPrefHeight() < 0) {
+                    candyPool.free(candy);
+                    candy.remove();
+                }
             }
-
-            if (candy.getY() + candy.getPrefHeight() < 0) {
-                candyPool.free(candy);
-                candy.remove();
-            }
-        }
+            children.end();
         }
     }
 
