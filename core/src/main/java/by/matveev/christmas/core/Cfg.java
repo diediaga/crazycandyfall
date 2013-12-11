@@ -14,7 +14,7 @@ public class Cfg {
     public static final int HEIGHT = 800;
 
     // Timing
-    public static final int INITIAL_TIME = 30 * 1000;
+    public static final int INITIAL_TIME = 5 * 1000;
     public static final int WARNING_TIME_THRESHOLD = 10 * 1000;
 
     // Colors

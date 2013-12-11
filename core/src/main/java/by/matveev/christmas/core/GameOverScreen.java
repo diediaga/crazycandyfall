@@ -12,13 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.delay;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.scaleTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 /**
  * @author Alexey Matveev
@@ -50,8 +49,8 @@ public class GameOverScreen extends AbstractScreen {
                 float buttonsWidth = 0;
                 float w = 0;
 
-                final List<Pair> buttons = Arrays.<Pair>asList(
-                        new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener() {
+                final Array<Pair> buttons = new Array<Pair>();
+                buttons.add(new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
                                 Screens.set(new PlayScreen());
@@ -75,7 +74,7 @@ public class GameOverScreen extends AbstractScreen {
                     w = btn.getFirst().getPrefWidth();
                 }
                 float padding = w * 0.35f;
-                buttonsWidth += padding * (buttons.size() - 1);
+                buttonsWidth += padding * (buttons.size - 1);
 
                 float startX = (Cfg.width() - buttonsWidth) * 0.5f;
                 float startY = Cfg.height() * 0.12f;
@@ -113,6 +112,10 @@ public class GameOverScreen extends AbstractScreen {
             }
         })));
 
+        final GameServices service = Platform.services();
+        if (!service.isSigned()) {
+            service.login();
+        }
 
     }
     private void addSocialButtons() {

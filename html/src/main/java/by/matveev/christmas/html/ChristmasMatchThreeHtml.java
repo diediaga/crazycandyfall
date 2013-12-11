@@ -1,6 +1,7 @@
 package by.matveev.christmas.html;
 
 import by.matveev.christmas.core.ChristmasMatchThree;
+import by.matveev.christmas.core.GameServices;
 import by.matveev.christmas.core.Platform;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.backends.gwt.preloader.Preloader;
 public class ChristmasMatchThreeHtml extends GwtApplication {
 	@Override
 	public ApplicationListener getApplicationListener () {
-        Platform.init(new HtmlPlatformActions());
+        Platform.init(new HtmlPlatformActions(), GameServices.NOT_SUPPORTED);
 		return new ChristmasMatchThree();
 	}
 	

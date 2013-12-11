@@ -42,6 +42,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: xerces:xmlParserAPIs:2.6.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: xpp3:xpp3:1.1.4c" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.json:json:20080701" level="project" />
+    <orderEntry type="library" name="Maven: com.github.rchugunov:google-play-services-jar:r13-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.rchugunov:android-support-v4:r18-SNAPSHOT" level="project" />
   </component>
 </module>
 
