@@ -120,7 +120,7 @@ public class MenuScreen extends AbstractScreen {
 
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                Screens.set(new PlayScreen());
+                                Platform.services().showLeaderboard();
                             }
 
                             @Override

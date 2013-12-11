@@ -19,7 +19,7 @@ public class Cfg {
 
     public static final int FROZEN_TIMER_DELAY = 5 * 1000;
 
-    public static final float SANTA_VELOCITY = 50f;
+    public static final float SANTA_VELOCITY = 100f;
 
     public static final float MIN_CANDY_VELOCITY = 25;
     public static final float MAX_CANDY_VELOCITY = 45;

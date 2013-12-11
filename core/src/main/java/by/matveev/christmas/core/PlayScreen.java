@@ -31,7 +31,6 @@ public class PlayScreen extends AbstractScreen {
     private enum State {
         Idle,
         Playing,
-        Frozen
     }
 
     private State state = State.Idle;
@@ -114,10 +113,10 @@ public class PlayScreen extends AbstractScreen {
                         bonusTime += 1000;
                         // generate time bonus
                         if (bonusTime >= Cfg.BONUS_TIME) {
-                            if (MathUtils.randomBoolean(MathUtils.random(0.4f, 0.5f))) {
+                            if (MathUtils.randomBoolean(MathUtils.random(0.7f, 1f))) {
                                 createBonus();
                             }
-                            if (MathUtils.randomBoolean(MathUtils.random(0.4f, 0.8f))) {
+                            if (MathUtils.randomBoolean(MathUtils.random(0.7f, 0.8f))) {
                                 createAntiBonus();
                             }
                             bonusTime = 0;
