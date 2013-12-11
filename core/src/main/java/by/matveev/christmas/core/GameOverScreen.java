@@ -111,11 +111,11 @@ public class GameOverScreen extends AbstractScreen {
                 return true;
             }
         })));
-
-        final GameServices service = Platform.services();
-        if (!service.isSigned()) {
-            service.login();
-        }
+//
+//        final GameServices service = Platform.services();
+//        if (!service.isSigned()) {
+//            service.login();
+//        }
 
     }
     private void addSocialButtons() {

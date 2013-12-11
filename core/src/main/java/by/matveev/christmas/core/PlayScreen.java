@@ -6,17 +6,20 @@ package by.matveev.christmas.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Timer;
 
+import static by.matveev.christmas.core.Cfg.SANTA_VELOCITY;
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
@@ -25,23 +28,32 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
  */
 public class PlayScreen extends AbstractScreen {
 
-    private HeadUpDisplay display;
+    private enum State {
+        Idle,
+        Playing,
+        Frozen
+    }
+
+    private State state = State.Idle;
 
     private Timer countdownTimer;
     private Timer spawnTimer;
 
-    private int currentTime;
+    private int gameTime;
+    private int bonusTime;
 
-    private boolean started;
+    private HeadUpDisplay display;
 
     private SantaClaus santaClaus;
     private Group candiesGroup;
 
     private int score;
 
+
+    private TextureAtlas resources;
+
     private Pool<Candy> candyPool;
     private Pool<Message> labelPool;
-    private TextureAtlas atlas;
 
     public PlayScreen() {
     }
@@ -59,18 +71,18 @@ public class PlayScreen extends AbstractScreen {
 
 
         stage.addActor(label);
-        stage.addListener(new ClickListener(){
+        stage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 label.remove();
 
 
-                started = true;
+                state = State.Playing;
 
                 createHeadUpDisplays();
                 createCandiesGroup();
 
-                atlas = Assets.instance().get("gfx/game.atlas");
+                resources = Assets.instance().get("gfx/game.atlas");
                 candyPool = new Pool<Candy>() {
                     @Override
                     protected Candy newObject() {
@@ -90,15 +102,28 @@ public class PlayScreen extends AbstractScreen {
                 };
 
 
-                currentTime = Cfg.INITIAL_TIME;
+                gameTime = Cfg.INITIAL_TIME;
                 countdownTimer = new Timer();
                 countdownTimer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
-                        currentTime -= 1000;
-                        display.setTime(currentTime);
+                        gameTime -= 1000;
+                        display.setTime(gameTime);
 
-                        if (currentTime <= 0) {
+
+                        bonusTime += 1000;
+                        // generate time bonus
+                        if (bonusTime >= Cfg.BONUS_TIME) {
+                            if (MathUtils.randomBoolean(MathUtils.random(0.4f, 0.5f))) {
+                                createBonus();
+                            }
+                            if (MathUtils.randomBoolean(MathUtils.random(0.4f, 0.8f))) {
+                                createAntiBonus();
+                            }
+                            bonusTime = 0;
+                        }
+
+                        if (gameTime <= 0) {
                             Screens.set(new GameOverScreen(score));
                         }
                     }
@@ -110,7 +135,7 @@ public class PlayScreen extends AbstractScreen {
                     public void run() {
                         createCandy();
                     }
-                }, 0, 0.3f);
+                }, 0, 0.5f);
 
 
             }
@@ -139,117 +164,158 @@ public class PlayScreen extends AbstractScreen {
 
     private void createCandy() {
         final Candy candy = candyPool.obtain();
-
-        final int type =  random(1, 8);
-
-        candy.setRegion(atlas.findRegion("candy" + type));
-        candy.setType(type);
+        final int type = random(1, 8);
+        candy.setRegion(resources.findRegion("candy" + type));
+        candy.setType(type < 7 ? Candy.Type.PlusScore : type == 7 ? Candy.Type.PlusTime : Candy.Type.PlusDoubleScore);
         candy.setRotation(random(360f));
         candy.setY(Cfg.height() + candy.getHeight());
-        candy.setX(random(Cfg.width() * 0.2f, Cfg.width() * 0.8f));
+        candy.setX(random(Cfg.width() * 0.07f, Cfg.width() * 0.93f));
         candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
         candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
-        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(25, 45), 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_CANDY_VELOCITY, Cfg.MAX_CANDY_VELOCITY), 0.1f)));
         candiesGroup.addActor(candy);
     }
 
+    private void createBonus() {
+        final Candy candy = candyPool.obtain();
+        final Candy.Type type = MathUtils.randomBoolean() ? Candy.Type.Freeze : Candy.Type.Multiply;
+        candy.setRegion(resources.findRegion(type == Candy.Type.Freeze ? "bonus_freeze" : "bonus_multiply"));
+        candy.setType(type);
+        candy.setRotation(random(360f));
+        candy.setY(Cfg.height() + candy.getHeight());
+        candy.setX(random(Cfg.width() * 0.07f, Cfg.width() * 0.93f));
+        candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
+        candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_BONUS_VELOCITY, Cfg.MIN_BONUS_VELOCITY), 0.1f)));
+        candiesGroup.addActor(candy);
+    }
+
+    private void createAntiBonus() {
+        final Candy candy = candyPool.obtain();
+        final Candy.Type type = MathUtils.randomBoolean() ? Candy.Type.MinusScore : Candy.Type.MinusTime;
+        candy.setRegion(resources.findRegion(type == Candy.Type.MinusScore ? "antibonus_score" : "antibonus_time"));
+        candy.setType(type);
+        candy.setRotation(random(360f));
+        candy.setY(Cfg.height() + candy.getHeight());
+        candy.setX(random(Cfg.width() * 0.07f, Cfg.width() * 0.93f));
+        candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
+        candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_BONUS_VELOCITY, Cfg.MIN_BONUS_VELOCITY), 0.1f)));
+        candiesGroup.addActor(candy);
+    }
 
     @Override
     public void render(float delta) {
         super.render(delta);
-        BoundsDebug.render(stage.getCamera().combined, delta);
 
-        if (started) {
+        if (state == State.Idle) return;
 
-        input();
+        processInput(delta);
 
-            final SnapshotArray<Actor> children = candiesGroup.getChildren();
-            Actor[] actors = children.begin();
-            for (int i = 0, n = children.size; i < n; i++) {
-                final Candy candy = (Candy) actors[i];
-                if (candy.bounds().overlaps(santaClaus.bounds())) {
+        final SnapshotArray<Actor> children = candiesGroup.getChildren();
+        final Actor[] actors = children.begin();
+        for (int i = 0, n = children.size; i < n; i++) {
+            final Candy candy = (Candy) actors[i];
+            if (candy.bounds().overlaps(santaClaus.bounds())) {
+                affect(candy);
 
-                    if (candy.getType() < 7) {
-                        // plain type
-                        score++;
-                        display.setScore(score);
-                        final Message label = labelPool.obtain();
-                        label.setPosition(candy.getX(), candy.getY());
-                        label.setText("+1");
-                        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                            @Override
-                            public boolean act(float delta) {
-                                label.remove();
-                                labelPool.free(label);
-                                return true;
-                            }
-                        }));
-                        stage.addActor(label);
-                    } else if (candy.getType() == 7) {
-                        currentTime += 1 * 1000;
-                        display.setBonusTime(currentTime);
-                        final Message label = labelPool.obtain();
-                        label.setPosition(candy.getX(), candy.getY());
-                        label.setText("+00:01");
-                        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                            @Override
-                            public boolean act(float delta) {
-                                label.remove();
-                                labelPool.free(label);
-                                return true;
-                            }
-                        }));
-                        stage.addActor(label);
-                    }  else if (candy.getType() == 8) {
-                        score += 2;
-                        display.setScore(score);
-                        final Message label = labelPool.obtain();
-                        label.setPosition(candy.getX(), candy.getY());
-                        label.setText("x2");
-                        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                            @Override
-                            public boolean act(float delta) {
-                                label.remove();
-                                labelPool.free(label);
-                                return true;
-                            }
-                        }));
-                        stage.addActor(label);
-                    }
-
-
-
-
-                    final Message label = labelPool.obtain();
-                    label.setPosition(candy.getX(), candy.getY());
-                    label.setText("+1");
-                    label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
-                        @Override
-                        public boolean act(float delta) {
-                            label.remove();
-                            labelPool.free(label);
-                            return true;
-                        }
-                    }));
-                    stage.addActor(label);
-
+                candy.remove();
+                candyPool.free(candy);
+            }
+            if (candy.getY() + candy.getPrefHeight() < 0) {
+                if (candy.getParent() != null) { // check is already removed
                     candy.remove();
                     candyPool.free(candy);
-                }
-
-                if (candy.getY() + candy.getPrefHeight() < 0) {
-                    candyPool.free(candy);
-                    candy.remove();
                 }
             }
-            children.end();
+        }
+        children.end();
+    }
+
+    private void affect(final Candy candy) {
+        final float cX = candy.getX();
+        final float cY = candy.getY();
+
+        switch (candy.getType()) {
+            case PlusScore:
+                score += 1;
+                display.setScore(score);
+                showPopup("+1", cX, cY);
+                break;
+            case PlusTime: {
+                gameTime += 1 * 1000;
+                display.setBonusTime(gameTime);
+                showPopup("+00:01", cX, cY);
+                break;
+            }
+            case PlusDoubleScore: {
+                score += 2;
+                display.setScore(score);
+                showPopup("+2", cX, cY);
+                break;
+            }
+            case Freeze:
+                showMessage("FREEZE TIME");
+                countdownTimer.delay(Cfg.FROZEN_TIMER_DELAY);
+                break;
+            case Multiply:
+                showMessage("DOUBLE SCORE");
+                score *= 2;
+                display.setScore(score);
+                break;
+            case MinusScore:
+                score += 10;
+                display.setScore(score);
+                showPopup("-10", cX, cY);
+                break;
+            case MinusTime:
+                gameTime -= 5 * 1000;
+                display.setBonusTime(gameTime);
+                showPopup("-00:05", cX, cY);
+                break;
+
         }
     }
 
-    private void input() {
+    private void showPopup(String msg, float x, float y) {
+        final Message label = labelPool.obtain();
+        label.setPosition(x, y);
+        label.setText(msg);
+        label.addAction(sequence(parallel(moveBy(0, 50, 0.5f), alpha(0, 0.5f)), new Action() {
+            @Override
+            public boolean act(float delta) {
+                label.remove();
+                labelPool.free(label);
+                return true;
+            }
+        }));
+        stage.addActor(label);
+    }
+
+    private void showMessage(String message) {
+        final Message label = labelPool.obtain();
+        label.setText(message);
+        label.setPosition((Cfg.width() - label.getPrefWidth()) * 0.5f,
+                (Cfg.height() - label.getPrefHeight()) * 0.5f);
+        label.setOrigin(label.getPrefWidth() * 0.5f, label.getPrefHeight() * 0.5f);
+        label.setScale(1.6f);
+        label.getColor().a = 0f;
+        label.addAction(Actions.sequence(Actions.alpha(1, 0.5f, Interpolation.bounceOut),
+                Actions.alpha(0, 0.5f, Interpolation.bounceIn), new Action() {
+            @Override
+            public boolean act(float delta) {
+                label.remove();
+                labelPool.free(label);
+                return true;
+            }
+        }));
+        stage.addActor(label);
+    }
+
+    private void processInput(float delta) {
         switch (Gdx.app.getType()) {
             case Android:
-                santaClaus.setX(santaClaus.getX() + (-Gdx.input.getAccelerometerX()));
+                santaClaus.setX(santaClaus.getX() + -(Gdx.input.getAccelerometerX() + SANTA_VELOCITY * delta));
                 break;
             default:
                 santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);

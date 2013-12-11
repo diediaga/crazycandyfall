@@ -1,7 +1,9 @@
 package by.matveev.christmas.android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import by.matveev.christmas.core.ChristmasMatchThree;
 import by.matveev.christmas.core.GameServices;
@@ -32,6 +34,8 @@ public class ChristmasMatchThreeActivity extends AndroidApplication
 
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useGL20 = true;
+        config.useWakelock = true;
+        config.useAccelerometer = true;
         initialize(new ChristmasMatchThree(), config);
 
         gameHelper.setup(this);
@@ -41,6 +45,16 @@ public class ChristmasMatchThreeActivity extends AndroidApplication
     protected void onStart() {
         super.onStart();
         gameHelper.onStart(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

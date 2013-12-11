@@ -13,16 +13,26 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  */
 public class Candy extends Entity{
 
-    private int type;
+    public enum Type {
+        PlusScore,
+        PlusDoubleScore,
+        PlusTime,
+        Multiply,
+        Freeze,
+        MinusScore,
+        MinusTime;
+    }
+
+    private Type type;
 
     public Candy() {
     }
 
-    public void setType(int type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public int getType() {
+    public Type getType() {
         return type;
     }
 
@@ -52,7 +62,7 @@ public class Candy extends Entity{
     public void reset() {
         super.reset();
         setDrawable(null);
-        setType(0);
+        setType(null);
         clearActions();
         clearListeners();
     }

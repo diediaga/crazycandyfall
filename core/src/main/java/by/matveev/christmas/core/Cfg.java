@@ -13,25 +13,20 @@ public class Cfg {
     public static final int WIDTH = 480;
     public static final int HEIGHT = 800;
 
-    // Timing
-    public static final int INITIAL_TIME = 5 * 1000;
+    public static final int INITIAL_TIME = 60 * 1000;
+    public static final int BONUS_TIME = 10 * 1000;
     public static final int WARNING_TIME_THRESHOLD = 10 * 1000;
 
-    // Colors
-    public static final Color COLOR_BACKGROUND = new Color(0xc0392bff);
-    public static final Color COLOR_CELL_BACKGROUND = new Color(0xe74c3cff);
+    public static final int FROZEN_TIMER_DELAY = 5 * 1000;
 
+    public static final float SANTA_VELOCITY = 50f;
 
-    public static final float GRAVITY = -0.98f;
+    public static final float MIN_CANDY_VELOCITY = 25;
+    public static final float MAX_CANDY_VELOCITY = 45;
 
+    public static final float MIN_BONUS_VELOCITY = 15;
+    public static final float MAX_BONUS_VELOCITY = 35;
 
-    // Size
-    public static final int CELL_WIDTH = 60;
-    public static final int CELL_HEIGHT = 60;
-
-    public static final int GRID_WIDTH = 6;
-    public static final int GRID_HEIGHT = 7;
-    public static final int SPACING = 15;
 
     private Cfg() {}
 

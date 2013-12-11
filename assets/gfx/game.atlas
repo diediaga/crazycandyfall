@@ -115,65 +115,93 @@ vk
   orig: 48, 48
   offset: 0, 0
   index: -1
-rect_mask
+bonus_freeze
   rotate: false
   xy: 263, 147
   size: 42, 42
   orig: 42, 42
   offset: 0, 0
   index: -1
-candy8
+rect_mask
   rotate: false
   xy: 467, 277
+  size: 42, 42
+  orig: 42, 42
+  offset: 0, 0
+  index: -1
+antibonus_score
+  rotate: false
+  xy: 566, 347
+  size: 42, 40
+  orig: 42, 40
+  offset: 0, 0
+  index: -1
+bonus_multiply
+  rotate: false
+  xy: 209, 38
+  size: 42, 40
+  orig: 42, 40
+  offset: 0, 0
+  index: -1
+candy8
+  rotate: false
+  xy: 263, 103
   size: 38, 42
   orig: 38, 42
   offset: 0, 0
   index: -1
+antibonus_time
+  rotate: false
+  xy: 610, 350
+  size: 37, 37
+  orig: 37, 37
+  offset: 0, 0
+  index: -1
 candy7
   rotate: false
-  xy: 566, 345
+  xy: 649, 345
   size: 30, 42
   orig: 30, 42
   offset: 0, 0
   index: -1
 candy1
   rotate: false
-  xy: 209, 36
+  xy: 681, 345
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy2
   rotate: false
-  xy: 263, 103
+  xy: 700, 345
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy3
   rotate: false
-  xy: 598, 345
+  xy: 719, 345
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy4
   rotate: false
-  xy: 228, 36
+  xy: 738, 345
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy5
   rotate: false
-  xy: 282, 103
+  xy: 757, 355
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy6
   rotate: false
-  xy: 617, 345
+  xy: 776, 355
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
