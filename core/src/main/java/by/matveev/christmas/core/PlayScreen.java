@@ -68,6 +68,8 @@ public class PlayScreen extends AbstractScreen {
         label.setPosition((Cfg.width() - label.getPrefWidth()) * 0.5f, (Cfg.height() - label.getPrefHeight()) * 0.5f);
         createSantaClaus();
 
+        countdownTimer = new Timer();
+        spawnTimer = new Timer();
 
         stage.addActor(label);
         stage.addListener(new ClickListener() {
@@ -102,7 +104,6 @@ public class PlayScreen extends AbstractScreen {
 
 
                 gameTime = Cfg.INITIAL_TIME;
-                countdownTimer = new Timer();
                 countdownTimer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
@@ -127,7 +128,6 @@ public class PlayScreen extends AbstractScreen {
                     }
                 }, 1, 1);
 
-                spawnTimer = new Timer();
                 spawnTimer.scheduleTask(new Timer.Task() {
                     @Override
                     public void run() {
