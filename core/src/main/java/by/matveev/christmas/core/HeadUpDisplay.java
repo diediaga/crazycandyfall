@@ -56,7 +56,7 @@ public class HeadUpDisplay extends WidgetGroup {
     }
 
     public void setScore(int score) {
-        labelScore.setText(String.valueOf(score));
+        labelScore.setText(String.valueOf(score < 0 ? 0 : score));
         updateLabelsPosition();
     }
 

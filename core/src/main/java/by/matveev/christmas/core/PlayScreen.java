@@ -111,12 +111,11 @@ public class PlayScreen extends AbstractScreen {
 
 
                         bonusTime += 1000;
-                        // generate time bonus
                         if (bonusTime >= Cfg.BONUS_TIME) {
-                            if (MathUtils.randomBoolean(MathUtils.random(0.7f, 1f))) {
+                            if (MathUtils.randomBoolean(MathUtils.random(0.9f, 1f))) {
                                 createBonus();
                             }
-                            if (MathUtils.randomBoolean(MathUtils.random(0.7f, 0.8f))) {
+                            if (MathUtils.randomBoolean(MathUtils.random(0.95f, 1f))) {
                                 createAntiBonus();
                             }
                             bonusTime = 0;
@@ -139,8 +138,6 @@ public class PlayScreen extends AbstractScreen {
 
             }
         });
-
-
     }
 
     private void createCandiesGroup() {
@@ -185,7 +182,7 @@ public class PlayScreen extends AbstractScreen {
         candy.setX(random(Cfg.width() * 0.07f, Cfg.width() * 0.93f));
         candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
         candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
-        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_BONUS_VELOCITY, Cfg.MIN_BONUS_VELOCITY), 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_BONUS_VELOCITY, Cfg.MAX_BONUS_VELOCITY), 0.1f)));
         candiesGroup.addActor(candy);
     }
 
@@ -199,7 +196,7 @@ public class PlayScreen extends AbstractScreen {
         candy.setX(random(Cfg.width() * 0.07f, Cfg.width() * 0.93f));
         candy.setOrigin(candy.getWidth() * 0.5f, candy.getHeight() * 0.5f);
         candy.addAction(repeat(-1, rotateBy(10f, 0.1f)));
-        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_BONUS_VELOCITY, Cfg.MIN_BONUS_VELOCITY), 0.1f)));
+        candy.addAction(repeat(-1, moveBy(0, -MathUtils.random(Cfg.MIN_CANDY_VELOCITY, Cfg.MAX_CANDY_VELOCITY), 0.1f)));
         candiesGroup.addActor(candy);
     }
 
@@ -255,7 +252,13 @@ public class PlayScreen extends AbstractScreen {
             }
             case Freeze:
                 showMessage("FREEZE TIME");
-                countdownTimer.delay(Cfg.FROZEN_TIMER_DELAY);
+                countdownTimer.stop();
+                stage.addAction(delay(10f, run(new Runnable() {
+                    @Override
+                    public void run() {
+                        countdownTimer.start();
+                    }
+                })));
                 break;
             case Multiply:
                 showMessage("DOUBLE SCORE");
@@ -263,14 +266,18 @@ public class PlayScreen extends AbstractScreen {
                 display.setScore(score);
                 break;
             case MinusScore:
-                score += 10;
+                score -= 20;
                 display.setScore(score);
-                showPopup("-10", cX, cY);
+                showPopup("-20", cX, cY);
+                Gdx.input.vibrate(1 * 1000);
+                shake();
                 break;
             case MinusTime:
-                gameTime -= 5 * 1000;
+                gameTime -= 10 * 1000;
                 display.setBonusTime(gameTime);
-                showPopup("-00:05", cX, cY);
+                showPopup("-00:10", cX, cY);
+                Gdx.input.vibrate(1 * 1000);
+                shake();
                 break;
 
         }
@@ -328,6 +335,19 @@ public class PlayScreen extends AbstractScreen {
         if (santaClaus.getX() > Cfg.width() - santaClaus.getWidth()) {
             santaClaus.setX(Cfg.width() - santaClaus.getWidth());
         }
+    }
+
+    private void shake() {
+        final float offset = 10f;
+        stage.addAction(sequence(repeat(4, sequence(
+                moveBy(offset, -offset, 0.08f, Interpolation.swingOut),
+                moveBy(-offset, offset, 0.08f, Interpolation.swingIn))),
+                run(new Runnable() {
+                    @Override
+                    public void run() {
+                        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                    }
+        })));
     }
 
     @Override

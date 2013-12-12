@@ -10,7 +10,7 @@ public class Sounds {
     }
 
     public static void init() {
-        background = Assets.instance().get("sounds/wallpaper.ogg");
+        background = Assets.instance().get("sounds/music.mp3");
         background.setVolume(1f);
         background.setLooping(true);
     }

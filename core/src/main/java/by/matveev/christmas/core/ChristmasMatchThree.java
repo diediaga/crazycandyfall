@@ -28,8 +28,9 @@ public class ChristmasMatchThree extends AbstractGame {
         Screens.set(new LoadingScreen(new Runnable() {
             @Override
             public void run() {
-//                Sounds.init();
-                Screens.push(new InfoScreen());
+                Sounds.init();
+//                Sounds.setEnabled(true);
+                Screens.set(new MenuScreen(true));
             }
         }));
     }

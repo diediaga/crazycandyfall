@@ -24,7 +24,10 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
  */
 public class GameOverScreen extends AbstractScreen {
 
+    private final int score;
+
     public GameOverScreen(int score) {
+        this.score = score;
 
         final Label.LabelStyle s = new Label.LabelStyle();
         s.fontColor = Color.WHITE;
@@ -143,7 +146,7 @@ public class GameOverScreen extends AbstractScreen {
             image.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    socialButton.getFirst().share("", "");
+                    socialButton.getFirst().share("I collected " + score + "candies", "");
                 }
 
                 @Override
