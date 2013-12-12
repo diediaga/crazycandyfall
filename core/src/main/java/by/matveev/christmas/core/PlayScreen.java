@@ -283,6 +283,28 @@ public class PlayScreen extends AbstractScreen {
         }
     }
 
+    @Override
+    public void pause() {
+        super.pause();
+
+        doPause();
+    }
+
+    private void doPause() {
+        Screens.push(new PauseDialog());
+    }
+
+    private void doResume() {
+
+    }
+
+    @Override
+    public void resume() {
+        super.resume();
+
+        doResume();
+    }
+
     private void showPopup(String msg, float x, float y) {
         final Message label = labelPool.obtain();
         label.setPosition(x, y);
@@ -353,10 +375,14 @@ public class PlayScreen extends AbstractScreen {
     @Override
     public void hide() {
         super.hide();
+        if (spawnTimer != null) {
         spawnTimer.stop();
         spawnTimer.clear();
+        }
 
-        countdownTimer.stop();
-        countdownTimer.clear();
+        if (countdownTimer != null) {
+            countdownTimer.stop();
+            countdownTimer.clear();
+        }
     }
 }
