@@ -37,6 +37,12 @@ public class PlayScreen extends AbstractScreen {
         Playing,
     }
 
+    public enum ControlType {
+        Touch, Accelerometer
+    }
+
+    private ControlType controlType = ControlType.Accelerometer;
+
     private State state = State.Idle;
 
     private Timer countdownTimer;
@@ -59,8 +65,8 @@ public class PlayScreen extends AbstractScreen {
     private Pool<Candy> candyPool;
     private Pool<Message> labelPool;
 
-    public PlayScreen() {
-
+    public PlayScreen(ControlType controlType) {
+        this.controlType = controlType;
     }
 
     private void updateScore(int newScore) {
@@ -419,14 +425,16 @@ public class PlayScreen extends AbstractScreen {
     final Vector3 touchPoint = new Vector3();
 
     private void processInput(float delta) {
-        if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            final float rotation = Gdx.input.getRotation() - 180;
-            final float acc = Gdx.input.getAccelerometerX();
-            santaClaus.setX(santaClaus.getX() + -(acc * SANTA_VELOCITY * delta));
+        stage.getCamera().unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+
+        final float newX;
+        if (controlType == ControlType.Accelerometer && Gdx.app.getType() == Application.ApplicationType.Android) {
+            newX = -(Gdx.input.getAccelerometerX() * SANTA_VELOCITY * delta);
         } else {
-            stage.getCamera().unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);
+            newX = Gdx.input.getDeltaX() * SANTA_VELOCITY * delta;
         }
+
+        santaClaus.addAction(moveBy(newX, 0, 0.2f));
 
         if (santaClaus.getX() < 0) {
             santaClaus.setX(0);

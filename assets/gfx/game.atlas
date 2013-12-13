@@ -45,9 +45,23 @@ speech
   orig: 121, 110
   offset: 0, 0
   index: -1
-playButton
+controlTiltButton
   rotate: false
   xy: 639, 401
+  size: 110, 110
+  orig: 110, 110
+  offset: 0, 0
+  index: -1
+controlTouchButton
+  rotate: false
+  xy: 751, 401
+  size: 110, 110
+  orig: 110, 110
+  offset: 0, 0
+  index: -1
+playButton
+  rotate: false
+  xy: 863, 401
   size: 110, 110
   orig: 110, 110
   offset: 0, 0
@@ -61,56 +75,70 @@ backwardButton
   index: -1
 continueButton
   rotate: false
-  xy: 751, 434
+  xy: 311, 202
   size: 77, 77
   orig: 77, 77
   offset: 0, 0
   index: -1
 exitButton
   rotate: false
-  xy: 830, 434
-  size: 77, 77
-  orig: 77, 77
-  offset: 0, 0
-  index: -1
-forwardButton
-  rotate: false
-  xy: 909, 434
-  size: 77, 77
-  orig: 77, 77
-  offset: 0, 0
-  index: -1
-infoButton
-  rotate: false
-  xy: 311, 202
-  size: 77, 77
-  orig: 77, 77
-  offset: 0, 0
-  index: -1
-menuButton
-  rotate: false
   xy: 185, 24
   size: 77, 77
   orig: 77, 77
   offset: 0, 0
   index: -1
-replayButton
+facebook
+  rotate: false
+  xy: 975, 463
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+gplus
+  rotate: false
+  xy: 975, 413
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+forwardButton
   rotate: false
   xy: 516, 322
   size: 77, 77
   orig: 77, 77
   offset: 0, 0
   index: -1
-scoresButton
+infoButton
   rotate: false
   xy: 595, 322
   size: 77, 77
   orig: 77, 77
   offset: 0, 0
   index: -1
-soundOffButton
+menuButton
   rotate: false
   xy: 674, 322
+  size: 77, 77
+  orig: 77, 77
+  offset: 0, 0
+  index: -1
+replayButton
+  rotate: false
+  xy: 753, 322
+  size: 77, 77
+  orig: 77, 77
+  offset: 0, 0
+  index: -1
+scoresButton
+  rotate: false
+  xy: 832, 322
+  size: 77, 77
+  orig: 77, 77
+  offset: 0, 0
+  index: -1
+soundOffButton
+  rotate: false
+  xy: 911, 322
   size: 77, 77
   orig: 77, 77
   offset: 0, 0
@@ -129,51 +157,79 @@ cursor
   orig: 13, 78
   offset: 0, 0
   index: -1
-facebook
+linkedin
   rotate: false
   xy: 496, 272
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-gplus
+twitter
   rotate: false
   xy: 546, 272
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-linkedin
+vk
   rotate: false
   xy: 596, 272
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-twitter
+rect_mask
   rotate: false
-  xy: 646, 272
-  size: 48, 48
-  orig: 48, 48
+  xy: 646, 278
+  size: 42, 42
+  orig: 42, 42
   offset: 0, 0
   index: -1
-vk
+antibonus_score
   rotate: false
-  xy: 696, 272
-  size: 48, 48
-  orig: 48, 48
+  xy: 690, 280
+  size: 42, 40
+  orig: 42, 40
+  offset: 0, 0
+  index: -1
+bonus_multiply
+  rotate: false
+  xy: 734, 280
+  size: 42, 40
+  orig: 42, 40
+  offset: 0, 0
+  index: -1
+bonus_freeze
+  rotate: false
+  xy: 778, 278
+  size: 38, 42
+  orig: 38, 42
+  offset: 0, 0
+  index: -1
+candy8
+  rotate: false
+  xy: 818, 278
+  size: 38, 42
+  orig: 38, 42
+  offset: 0, 0
+  index: -1
+antibonus_time
+  rotate: false
+  xy: 858, 283
+  size: 37, 37
+  orig: 37, 37
   offset: 0, 0
   index: -1
 candy7
   rotate: false
-  xy: 988, 469
+  xy: 278, 159
   size: 30, 42
   orig: 30, 42
   offset: 0, 0
   index: -1
 pauseButton
   rotate: false
-  xy: 988, 435
+  xy: 897, 288
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -187,84 +243,42 @@ candy1
   index: -1
 candy2
   rotate: false
-  xy: 278, 159
+  xy: 310, 158
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
-rect_mask
-  rotate: false
-  xy: 297, 158
-  size: 42, 42
-  orig: 42, 42
-  offset: 0, 0
-  index: -1
-antibonus_score
-  rotate: false
-  xy: 341, 160
-  size: 42, 40
-  orig: 42, 40
-  offset: 0, 0
-  index: -1
-bonus_multiply
-  rotate: false
-  xy: 496, 230
-  size: 42, 40
-  orig: 42, 40
-  offset: 0, 0
-  index: -1
-bonus_freeze
-  rotate: false
-  xy: 540, 228
-  size: 38, 42
-  orig: 38, 42
-  offset: 0, 0
-  index: -1
-candy8
-  rotate: false
-  xy: 580, 228
-  size: 38, 42
-  orig: 38, 42
-  offset: 0, 0
-  index: -1
-antibonus_time
-  rotate: false
-  xy: 620, 233
-  size: 37, 37
-  orig: 37, 37
-  offset: 0, 0
-  index: -1
 candy3
   rotate: false
-  xy: 659, 228
+  xy: 329, 158
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy4
   rotate: false
-  xy: 678, 228
+  xy: 348, 158
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy5
   rotate: false
-  xy: 697, 228
+  xy: 367, 158
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 candy6
   rotate: false
-  xy: 716, 228
+  xy: 278, 115
   size: 17, 42
   orig: 17, 42
   offset: 0, 0
   index: -1
 mask
   rotate: false
-  xy: 1020, 500
+  xy: 106, 11
   size: 3, 11
   orig: 3, 11
   offset: 0, 0

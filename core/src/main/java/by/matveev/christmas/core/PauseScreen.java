@@ -55,7 +55,7 @@ public class PauseScreen extends AbstractScreen {
                 buttons.add(new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        Screens.set(new PlayScreen());
+                        Screens.set(new ControlTypeScreen());
                     }
                 }));
 
