@@ -17,8 +17,8 @@ public class ChristmasMatchThreeDesktop {
 		config.useGL20 = true;
 //        config.width = 480 / 2;
 //        config.height = 600 / 2;
-        config.width = (int) (480 * 0.7f);
-        config.height = (int) (800 * 0.7f);
+        config.width = (int) (480);
+        config.height = (int) (800);
 		new LwjglApplication(new ChristmasMatchThree(), config);
 	}
 }

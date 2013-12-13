@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -27,7 +28,7 @@ public class GameOverScreen extends AbstractScreen {
     private final int score;
 
     public GameOverScreen(int score) {
-        this.score = score;
+        this.score = Math.max(0, score);
 
         final Label.LabelStyle s = new Label.LabelStyle();
         s.fontColor = Color.WHITE;
@@ -54,11 +55,19 @@ public class GameOverScreen extends AbstractScreen {
 
                 final Array<Pair> buttons = new Array<Pair>();
                 buttons.add(new Pair<Image, ClickListener>(new Image(atlas.findRegion("replayButton")), new ClickListener() {
-                            @Override
-                            public void clicked(InputEvent event, float x, float y) {
-                                Screens.set(new PlayScreen());
-                            }
-                        }));
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        Screens.set(new PlayScreen());
+                    }
+                }));
+
+                buttons.add(new Pair<Image, ClickListener>(new Image(atlas.findRegion("menuButton")), new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        Screens.set(new MenuScreen());
+                    }
+                }));
+
 
                 if (Gdx.app.getType() != Application.ApplicationType.WebGL) {
                     buttons.add(
@@ -69,6 +78,7 @@ public class GameOverScreen extends AbstractScreen {
                                 }
                             }));
                 }
+
 
 
 
@@ -114,11 +124,9 @@ public class GameOverScreen extends AbstractScreen {
                 return true;
             }
         })));
-//
-//        final GameServices service = Platform.services();
-//        if (!service.isSigned()) {
-//            service.login();
-//        }
+
+        if (score > 0)
+            Highscores.instance().submit(score);
 
     }
     private void addSocialButtons() {

@@ -1,5 +1,6 @@
 package by.matveev.christmas.core;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
@@ -24,6 +25,13 @@ public class MenuScreen extends AbstractScreen {
         this.showIntro = showIntro;
     }
 
+
+    @Override
+    protected void onHardKeyPressed(int keyCode) {
+        super.onHardKeyPressed(keyCode);
+
+        Gdx.app.exit();
+    }
 
     @Override
     public void show() {
@@ -131,7 +139,7 @@ public class MenuScreen extends AbstractScreen {
 
                                 @Override
                                 public void clicked(InputEvent event, float x, float y) {
-                                    Screens.set(new HighscoreScreen());
+                                    Screens.set(new HighscoresScreen());
                                 }
 
                                 @Override
@@ -250,7 +258,7 @@ public class MenuScreen extends AbstractScreen {
 
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        Screens.set(new HighscoreScreen());
+                        Screens.set(new HighscoresScreen());
                     }
 
                     @Override

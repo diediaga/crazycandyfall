@@ -17,7 +17,7 @@ public class ChristmasMatchThreeHtml extends GwtApplication {
 	
 	@Override
 	public GwtApplicationConfiguration getConfig () {
-        return new GwtApplicationConfiguration(480, 800);
+        return new GwtApplicationConfiguration((int)(480 * 0.7f), (int) (800 * 0.7f));
 	}
 
 

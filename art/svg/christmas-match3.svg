@@ -24,17 +24,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.74971559"
-     inkscape:cx="-2763.7348"
-     inkscape:cy="-3230.0171"
+     inkscape:zoom="0.83171573"
+     inkscape:cx="-2951.4033"
+     inkscape:cy="-3541.0944"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="708"
-     inkscape:window-height="623"
-     inkscape:window-x="2014"
-     inkscape:window-y="147"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1366"
+     inkscape:window-height="721"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
+     inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true">
     <sodipodi:guide
@@ -2395,5 +2395,16 @@
          id="path5626"
          inkscape:connector-curvature="0" />
     </g>
+    <rect
+       style="fill:#e74c3c;fill-opacity:1;stroke:none"
+       id="rect3394"
+       width="10"
+       height="60"
+       x="-3311.2263"
+       y="4556.0796"
+       ry="0"
+       inkscape:export-filename="D:\Projects\christmas-match3\christmasmatchthree\art\png\game\cursor.png"
+       inkscape:export-xdpi="117"
+       inkscape:export-ydpi="117" />
   </g>
 </svg>

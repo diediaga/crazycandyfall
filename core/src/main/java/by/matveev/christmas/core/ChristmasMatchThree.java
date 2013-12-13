@@ -21,7 +21,7 @@ public class ChristmasMatchThree extends AbstractGame {
         Prefs.addListener(new Prefs.PrefsListener() {
             @Override
             public void changed(String key) {
-                Sounds.setEnabled(Prefs.getBoolean(Prefs.KEY_SOUND_ENABLED));
+                Sounds.setSoundsEnabled(Prefs.getBoolean(Prefs.KEY_SOUND_ENABLED));
             }
         });
 
@@ -29,7 +29,7 @@ public class ChristmasMatchThree extends AbstractGame {
             @Override
             public void run() {
                 Sounds.init();
-                Sounds.setEnabled(true);
+                Sounds.setSoundsEnabled(Prefs.getBoolean(Prefs.KEY_SOUND_ENABLED));
                 Screens.set(new MenuScreen(true));
             }
         }));

@@ -24,7 +24,7 @@ public class LoadingScreen extends AbstractScreen {
         assets.loadAsset("gfx/icons.atlas", TextureAtlas.class);
         assets.loadAsset("gfx/game.atlas", TextureAtlas.class);
         assets.loadAsset("fonts/font.fnt", BitmapFont.class);
-        assets.loadAsset("sounds/music.mp3", Music.class);
+        assets.loadAsset("sounds/music.ogg", Music.class);
         assets.finishLoading();
     }
 

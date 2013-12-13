@@ -3,18 +3,25 @@
  */
 package by.matveev.christmas.core;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Timer;
@@ -48,6 +55,7 @@ public class PlayScreen extends AbstractScreen {
 
     private int score;
 
+    private ClickListener listener;
 
     private TextureAtlas resources;
 
@@ -55,35 +63,91 @@ public class PlayScreen extends AbstractScreen {
     private Pool<Message> labelPool;
 
     public PlayScreen() {
+
     }
 
     @Override
     public void show() {
         super.show();
 
+        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new InputAdapter(){
+
+            boolean started;
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                if (started) {
+                    santaClaus.setX(screenX);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                if (santaClaus.bounds.contains(screenX, screenY)) {
+                    started = true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                started = false;
+                return false;
+            }
+        }));
+
+        if (state == State.Playing) {
+            if (spawnTimer != null) spawnTimer.start();
+            if (countdownTimer != null) countdownTimer.start();
+
+            doResume();
+
+            return;
+        }
+        stage.getRoot().clearChildren();
+        stage.removeListener(listener);
+
         final Label.LabelStyle s = new Label.LabelStyle();
         s.fontColor = Color.WHITE;
         s.font = Assets.instance().get("fonts/font.fnt");
-        final Label label = new Label("TAP TO START!", s);
+
+        final Label message = new Label("collect candies.\navoid bombs.", s);
+        message.setAlignment(Align.center, Align.center);
+        message.setPosition((Cfg.width() - message.getPrefWidth()) * 0.5f, Cfg.height() * 0.7f);
+        stage.addActor(message);
+
+
+        final Label label = new Label("TAP TO START", s);
         label.setPosition((Cfg.width() - label.getPrefWidth()) * 0.5f, (Cfg.height() - label.getPrefHeight()) * 0.5f);
         createSantaClaus();
+
+
 
         countdownTimer = new Timer();
         spawnTimer = new Timer();
 
         stage.addActor(label);
-        stage.addListener(new ClickListener() {
+        listener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 label.remove();
+                message.remove();
 
+                stage.removeListener(listener);
 
                 state = State.Playing;
 
+                resources = Assets.instance().get("gfx/game.atlas");
+
                 createHeadUpDisplays();
                 createCandiesGroup();
+                createPauseButton();
 
-                resources = Assets.instance().get("gfx/game.atlas");
+
+
+
+
                 candyPool = new Pool<Candy>() {
                     @Override
                     protected Candy newObject() {
@@ -135,9 +199,35 @@ public class PlayScreen extends AbstractScreen {
                     }
                 }, 0, 0.5f);
 
+                doResume();
+            }
+        };
+        stage.addListener(listener);
+    }
 
+    private void createPauseButton() {
+        final Image pause = new Image(resources.findRegion("pauseButton"));
+        pause.setOrigin(pause.getPrefWidth() * 0.5f, pause.getPrefHeight() * 0.5f);
+        pause.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                doPause();
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                pause.clearActions();
+                pause.addAction(scaleTo(1.05f, 1.05f, 0.2f));
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                pause.clearActions();
+                pause.addAction(scaleTo(1f, 1f, 0.2f));
             }
         });
+        pause.setPosition((Cfg.width() - pause.getPrefWidth()) * 0.5f, Cfg.height()* 0.88f);
+        stage.addActor(pause);
     }
 
     private void createCandiesGroup() {
@@ -291,11 +381,13 @@ public class PlayScreen extends AbstractScreen {
     }
 
     private void doPause() {
-        Screens.push(new PauseDialog());
+        Screens.push(new PauseScreen());
     }
 
-    private void doResume() {
 
+
+    private void doResume() {
+        Sounds.play();
     }
 
     @Override
@@ -340,15 +432,24 @@ public class PlayScreen extends AbstractScreen {
         stage.addActor(label);
     }
 
-    private void processInput(float delta) {
-        switch (Gdx.app.getType()) {
-            case Android:
-                santaClaus.setX(santaClaus.getX() + -(Gdx.input.getAccelerometerX() + SANTA_VELOCITY * delta));
-                break;
-            default:
-                santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);
-        }
+    final Vector3 touchPoint = new Vector3();
 
+    private void processInput(float delta) {
+//        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+//            santaClaus.setX(santaClaus.getX() +  Gdx.input.getAccelerometerX() + SANTA_VELOCITY * delta);
+//        } else {
+//            santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);
+//        }
+
+//        if(Gdx.input.justTouched())
+//        {
+//            stage.getCamera().unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+//            if(OverlapTester.pointInRectangle(Assets.resumeButton.getBoundingRectangle(), touchPoint.x,touchPoint.y))
+//            {
+//                some thing u want to do
+//            }
+//
+//        }
 
         if (santaClaus.getX() < 0) {
             santaClaus.setX(0);
@@ -373,16 +474,21 @@ public class PlayScreen extends AbstractScreen {
     }
 
     @Override
+    protected void onHardKeyPressed(int keyCode) {
+        doPause();
+    }
+
+    @Override
     public void hide() {
         super.hide();
         if (spawnTimer != null) {
-        spawnTimer.stop();
-        spawnTimer.clear();
+            spawnTimer.stop();
         }
 
         if (countdownTimer != null) {
             countdownTimer.stop();
-            countdownTimer.clear();
         }
+
+        Sounds.stop();
     }
 }
