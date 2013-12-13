@@ -27,7 +27,7 @@ public final class Assets implements Disposable, AssetErrorListener {
         manager = new AssetManager();
         manager.setErrorListener(this);
 
-        Texture.setAssetManager(manager);
+//        Texture.setAssetManager(manager);
 
         groups = new ObjectMap<String, Array<Asset>>();
     }

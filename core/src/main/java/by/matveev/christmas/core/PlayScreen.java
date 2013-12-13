@@ -5,8 +5,6 @@ package by.matveev.christmas.core;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
@@ -21,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.Timer;
@@ -66,36 +63,14 @@ public class PlayScreen extends AbstractScreen {
 
     }
 
+    private void updateScore(int newScore) {
+        this.score = newScore < 0 ? 0 : newScore;
+        display.setScore(score);
+    }
+
     @Override
     public void show() {
         super.show();
-
-        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new InputAdapter(){
-
-            boolean started;
-
-            @Override
-            public boolean touchDragged(int screenX, int screenY, int pointer) {
-                if (started) {
-                    santaClaus.setX(screenX);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                if (santaClaus.bounds.contains(screenX, screenY)) {
-                    started = true;
-                }
-                return false;
-            }
-
-            @Override
-            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                started = false;
-                return false;
-            }
-        }));
 
         if (state == State.Playing) {
             if (spawnTimer != null) spawnTimer.start();
@@ -172,6 +147,10 @@ public class PlayScreen extends AbstractScreen {
                     @Override
                     public void run() {
                         gameTime -= 1000;
+                        if (gameTime <= 0) {
+                            gameTime = 0;
+                            Screens.set(new GameOverScreen(score));
+                        }
                         display.setTime(gameTime);
 
 
@@ -184,10 +163,6 @@ public class PlayScreen extends AbstractScreen {
                                 createAntiBonus();
                             }
                             bonusTime = 0;
-                        }
-
-                        if (gameTime <= 0) {
-                            Screens.set(new GameOverScreen(score));
                         }
                     }
                 }, 1, 1);
@@ -226,7 +201,7 @@ public class PlayScreen extends AbstractScreen {
                 pause.addAction(scaleTo(1f, 1f, 0.2f));
             }
         });
-        pause.setPosition((Cfg.width() - pause.getPrefWidth()) * 0.5f, Cfg.height()* 0.88f);
+        pause.setPosition((Cfg.width() - pause.getPrefWidth()) * 0.5f, Cfg.height() * 0.88f);
         stage.addActor(pause);
     }
 
@@ -316,6 +291,12 @@ public class PlayScreen extends AbstractScreen {
             }
         }
         children.end();
+
+
+        if (gameTime <= 0) {
+            state = State.Idle;
+            Screens.set(new GameOverScreen(score));
+        }
     }
 
     private void affect(final Candy candy) {
@@ -325,18 +306,18 @@ public class PlayScreen extends AbstractScreen {
         switch (candy.getType()) {
             case PlusScore:
                 score += 1;
-                display.setScore(score);
+                updateScore(score);
                 showPopup("+1", cX, cY);
                 break;
             case PlusTime: {
                 gameTime += 1 * 1000;
-                display.setBonusTime(gameTime);
+                display.setTime(gameTime);
                 showPopup("+00:01", cX, cY);
                 break;
             }
             case PlusDoubleScore: {
                 score += 2;
-                display.setScore(score);
+                updateScore(score);
                 showPopup("+2", cX, cY);
                 break;
             }
@@ -353,18 +334,21 @@ public class PlayScreen extends AbstractScreen {
             case Multiply:
                 showMessage("DOUBLE SCORE");
                 score *= 2;
-                display.setScore(score);
+                updateScore(score);
                 break;
             case MinusScore:
                 score -= 20;
-                display.setScore(score);
+                updateScore(score);
                 showPopup("-20", cX, cY);
                 Gdx.input.vibrate(1 * 1000);
                 shake();
                 break;
             case MinusTime:
                 gameTime -= 10 * 1000;
-                display.setBonusTime(gameTime);
+                if (gameTime < 0) {
+                    gameTime = 0;
+                }
+                display.setTime(gameTime);
                 showPopup("-00:10", cX, cY);
                 Gdx.input.vibrate(1 * 1000);
                 shake();
@@ -435,21 +419,14 @@ public class PlayScreen extends AbstractScreen {
     final Vector3 touchPoint = new Vector3();
 
     private void processInput(float delta) {
-//        if (Gdx.app.getType() == Application.ApplicationType.Android) {
-//            santaClaus.setX(santaClaus.getX() +  Gdx.input.getAccelerometerX() + SANTA_VELOCITY * delta);
-//        } else {
-//            santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);
-//        }
-
-//        if(Gdx.input.justTouched())
-//        {
-//            stage.getCamera().unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-//            if(OverlapTester.pointInRectangle(Assets.resumeButton.getBoundingRectangle(), touchPoint.x,touchPoint.y))
-//            {
-//                some thing u want to do
-//            }
-//
-//        }
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            final float rotation = Gdx.input.getRotation() - 180;
+            final float acc = Gdx.input.getAccelerometerX();
+            santaClaus.setX(santaClaus.getX() + -(acc * SANTA_VELOCITY * delta));
+        } else {
+            stage.getCamera().unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+            santaClaus.setX(Gdx.input.getX() - santaClaus.getPrefWidth() * 0.5f);
+        }
 
         if (santaClaus.getX() < 0) {
             santaClaus.setX(0);

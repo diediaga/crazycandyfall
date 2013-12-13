@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -154,7 +153,7 @@ public class GameOverScreen extends AbstractScreen {
             image.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    socialButton.getFirst().share("I collected " + score + "candies", "");
+                    socialButton.getFirst().share("I just collected " + score + " candies! See if you can do better!", "http://goo.gl/RV2E0n");
                 }
 
                 @Override
